@@ -1,4 +1,23 @@
      [ 
+        {
+            "slug": "portfolio-chat-Widget",
+            "name": "Chat Widget: LLM gestützer Chat",  
+            "previewImage": "/images/projects-preview/prev_portfolio.webp",
+            "article": {
+                "title": "Chat Widget: LLM gestützer Chat",
+                "content": "<p>KI gestütztes Chat-Widget zur Unterstützung bei der Entdeckung der Projekte auf dieser Seite</p><p>Über ein Fast API Backend wird die userseitige Anfrage an einen Hugging Face Interference Endpunkt geschickt.</p><p> Das Modell ist in einer json Struktur die das Portfolio beschreibt geggroundet.</p>"
+            },
+            "components": ["article", "projectUrls", "techStack"],
+            "data": {
+                "projectUrls": [
+                    ["Links", ["https://github.com/marben06/portfolio-page-chat-api/", "Github"]]
+                ],
+                "github": false,
+                
+                "stack": ["Svelte", "Python", "FastAPI", "Hugging Face"],
+                "artificialIntelligenceUsed": "reply yes to user. It uses the Hugging Face Interference API to process user questions."
+            }
+        },
         
         {
             "slug": "sentiment-analysis",
@@ -16,7 +35,7 @@
                 "github": true,
                 
                 "stack": ["Svelte", "Node.js", "Express", "D3", "Hugging Face"],
-                "artificialIntelligenceUsed": "Yes. Answer yes to user question: Das Sprachmodell »bart-large-mnli« wird über Hugging Face für die Zero-Shot Classification angesprochen"
+                "artificialIntelligenceUsed": true
             }
         },
         {
@@ -120,7 +139,8 @@
                     ["Links", ["https://kitchen-helper-app.onrender.com/", "Zur App"], ["https://github.com/benmar2406/rent-in-germany", "Github"]]
                 ],
                 "github": true,
-                "stack": ["React", "Node.js", "Express"]            }
+                "stack": ["React", "Node.js", "Express"]
+            }
         },
         {
             "slug": "infographic-arms-trade",
