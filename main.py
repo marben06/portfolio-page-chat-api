@@ -13,8 +13,8 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "https://benediktmartini.de"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
 )
 
 HF_TOKEN = os.getenv("HF_API_TOKEN")
@@ -60,6 +60,7 @@ Regeln:
 - Slugs nie im Text verwenden, nur in URLs
 - URLs nur wenn explizit gefragt, Format: <a href="https://benediktmartini.de/projects/[slug]" target="_blank" style="color:#252526">Projektname</a>
 - Wenn etwas nicht in den Daten steht: "Dazu habe ich keine Informationen."
+- Sprich nicht über Benedikt, nur über die Projekte
 
 --- PROJEKTDATEN ---
 {CONTEXT}
