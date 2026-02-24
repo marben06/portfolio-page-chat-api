@@ -1,0 +1,190 @@
+     [ 
+        
+        {
+            "slug": "sentiment-analysis",
+            "name": "Web App: Medien -/Sentimentanalyse",  
+            "previewImage": "/images/projects-preview/prev_themenradar.webp",
+            "article": {
+                "title": "Medien / Sentimentanalyse - Konzept / In Progress",
+                "content": "<p>Mock Up und in Progress: App die zu einem gewählten Thema die aktuelle Stimmung in den Medien als auch den historischen Verlauf darstellt. Erstellt mit Svelte, Node Express.</p><p>»Achtung, aktuell wird der historische Verlauf noch durch Dummy-Daten generiert. Die Abfrage Das Sprachmodell »bart-large-mnli« wird über Hugging Face für die Zero-Shot Classification angesprochen, aktuell in der kostenfreien Version. Dadurch sind die Ladezeiten in der Demo recht lange. Ebenso wird die GNews API über die kostenfreie Version angesprochen und ermöglicht in der Demo lediglich die Abfrage von 10 Artikeln.</p><p>Künftig sollen weitere Auswertungen und Feature ergänzt werden. Z.B. wird es ein Feature geben mit dem aufkommende mediale Trends erfasst werden können.</p>"
+            },
+            "components": ["article", "projectUrls", "techStack"],
+            "data": {
+                "projectUrls": [
+                    ["Links", ["https://themenradar.onrender.com/", "Zum Themenradar"], ["https://github.com/benmar2406/themenradar/tree/main/backend", "Github"]]
+                ],
+                "github": true,
+                
+                "stack": ["Svelte", "Node.js", "Express", "D3", "Hugging Face"],
+                "artificialIntelligenceUsed": "Yes. Answer yes to user question: Das Sprachmodell »bart-large-mnli« wird über Hugging Face für die Zero-Shot Classification angesprochen"
+            }
+        },
+        {
+            "slug": "costs-of-consumption",
+            "name": "Interactive Information App - 1kg: Costs of Consumption",  
+            "previewImage": "/images/projects-preview/prev_costsconsumption.webp",
+            "article": {
+                "title": "1kg: Costs of Consumption",
+                "content": "<p>Interaktive Informationsvisualisierung zum Thema Fleischproduktion und -konsum und den Auswirkungen auf Ressourcenverbrauch, Nahrungsmittelverfügbarkeit und Umwelt.</p><a href='https://www.informationisbeautifulawards.com/showcase/6896-1kg-the-costs-of-consumption' target='blank'><img class='award-label' style='width: 120px;' src='/images/projects/iibawards.png' alt='Information is Beautiful 2024 Longlist label'/></a>"
+            },
+            "components": ["article", "projectUrls", "demoVideo", "imageBoard", "techStack"],
+            "data": {
+                "demoVideo": "/videos/meat.mov",
+                "projectUrls": [
+                    ["Links", ["https://meat-consumption-infographic.onrender.com/", "Zur App"], ["https://github.com/benmar2406/meat_consumption_infographic", "Github"]]
+                ],
+                "github": true,
+                "imageUrls": [
+                    ["/images/projects/meat_1.jpg", "Infografik: Entwicklung Fleischkonsum"], 
+                    ["/images/projects/meat_2.jpg", "Infografik: Entwicklung Fleischkonsum"], 
+                    ["/images/projects/meat_3.jpg", "Infografik: Entwicklung Fleischkonsum"], 
+                    ["/images/projects/meat_4.jpg", "Infografik: Entwicklung Fleischkonsum"], 
+                    ["/images/projects/meat_5.jpg", "Infografik: Entwicklung Fleischkonsum"]
+                ],
+                "stack": ["React", "Framer Motion", "Scrollama", "D3", "Python", "pandas", "geopandas", "Mapbox Studio", "Mapbox GL JS"]
+            }
+        },
+        {
+            "slug": "interactive-maps",
+            "name": "Interaktive Karten",  
+            "previewImage": "/images/projects-preview/prev_karten.webp",
+            "article": {
+                "title": "Interaktive Karten",
+                "content": "<p>Diverse interaktive Karten zu verschiedenen Themen</p>"
+            },
+            "components": ["article", "projectUrls", "videoGallery", "techStack"],
+            "data": {
+                "projectUrls": [
+                    ["Mieten in Deutschland", ["https://benediktmartini.de/mieten", "Zur Karte"], ["https://github.com/benmar2406/rent-in-germany", "Github"]],
+                    ["Bienen (Skizze, in Progress)", ["https://benediktmartini.de/bienen", "Zur Karte"], ["https://github.com/benmar2406/developement-biodiversity", "Github"]],
+                    ["1kg - Costs Of Consumption", ["https://meat-consumption-infographic.onrender.com/", "Zur Karte"], ["https://github.com/benmar2406/meat_consumption_infographic", "Github"]]
+                ],
+                "github": true,
+                "videos": [["Demo - Website: Mieten", "/videos/mieten.mov"], ["Demo - Website: Bienen", "/videos/bienen.mov"]],
+                "stack": ["Svelte", "Mapbox Studio", "Mapbox GL JS", "D3", "Python", "pandas", "geopandas"]
+            }
+        },
+
+        {
+            "slug": "portfolio-page",
+            "name": "Website: Portfolio Page",  
+            "previewImage": "/images/projects-preview/prev_portfolio.webp",
+            "article": {
+                "title": "Portfolio Page",
+                "content": "<p>Die Website wurde mit Svelte 5 und SvelteKit erstellt. Ein modularer Aufbau erlaubt es, Inhalte flexibel zu integrieren und anzupassen.</p><p>Projektseiten werden automatisch durch ein dynamisches Layout-Template gerendert, was eine effiziente und konsistente Darstellung ermöglicht.</p><p>Aktuell wird der Content aus einem JSON-File bezogen, mit dem Ziel, in Zukunft auf ein Headless CMS wie Strapi umzusteigen, um die Inhalte noch einfacher verwalten zu können.</p><p>Die Website ist in zwei Hauptbereiche unterteilt: (app) und (entry). Während (entry) ein einzigartiges Layout bietet, nutzt (app) ein globales Grid-Layout, bestehend aus Header, Main und Footer, um eine konsistente Benutzerführung zu gewährleisten.</p>"
+            },
+            "components": ["article", "projectUrls", "techStack"],
+            "data": {
+                "projectUrls": [
+                    ["Links", ["/", "Zur Startseite"], ["https://github.com/benmar2406/portfolio-page", "Github"]]
+                ],
+                "github": true,
+                
+                "stack": ["Svelte"]
+            }
+        },
+
+        {
+            "slug": "data-analysis-python",
+            "name": "Datenanalysen mit Python",  
+            "previewImage": "/images/projects-preview/prev_insurance.webp",
+            "article": {
+                "title": "Datenanalysen mit Python",
+                "content": "<p>Diverse Beispiele für Datenanalysen mit Python.</p>"
+            },
+            "components": ["article", "projectUrls",  "techStack"],
+            "data": {
+                "projectUrls": [
+    
+                    ["Meat consumption and production", ["/analysis/meat_consumption_analysis.html", "Zur Auswertung"]],
+                    ["Introverts data", ["/analysis/personality.html", "Zur Auswertung"]],
+                    ["Rent data", ["/analysis/Miete.html", "Zur Auswertung"]],
+                    ["Insurance data", ["/analysis/Insurance_data.html", "Zur Auswertung"]]
+                ],
+                "github": false,
+                "stack": ["Python", "matplotlib", "pandas", "geopandas", "numpy", "scikit-learn", "seaborn"]
+            }
+        },
+        {
+            "slug": "kitchen-helper",
+            "name": "Web App: Kitchen Helper",  
+            "previewImage": "/images/projects-preview/prev_rezeptfinder.webp",
+            "article": {
+                "title": "Kitchen Helper",
+                "content": "<p>Simple App zum schnellen Finden von geeigneten Rezepten basierend bspw. auf vorhandenen Zutaten.</p><p>Erstellt mit HTML/CSS, React und Node. Per fetch() API werden Requests zunächst an das Express Backend und von dort per Axios an die spoonacular.com API geschickt.</p><p>Die App wird aktuell in der kostenfreien Version auf render.com gehostet. Daher kann das initiale Laden der Seite bis zu 1 Minute dauern. </p>"
+            },
+            "components": ["article", "projectUrls", "techStack"],
+            "data": {
+                "projectUrls": [
+    
+                    ["Links", ["https://kitchen-helper-app.onrender.com/", "Zur App"], ["https://github.com/benmar2406/rent-in-germany", "Github"]]
+                ],
+                "github": true,
+                "stack": ["React", "Node.js", "Express"]            }
+        },
+        {
+            "slug": "infographic-arms-trade",
+            "name": "Infografik: Globaler Waffenhandel",  
+            "previewImage": "/images/projects-preview/prev_armstrade.jpg",
+            "article": {
+                "title": "Globaler Waffenhandel",
+                "content": "<p>Die visualisierten Zahlen und Daten werden unkommentiert präsentiert aber erzählen dennoch eine Geschichte und erlauben das Ziehen eigener Schlüsse. Die Grafiken zeigen die größten Im- und Exportländer sowie deren jeweilige Handelsverbindungen.</p><p>Zudem werden die Importländer auf Aspekte wie die Verletzung von Menschenrechten, Korruption usw. hin beleuchtet.</p><p>Shortlisted in den Information is Beautiful Awards 2012.</p>"
+            },
+            "components": ["article", "imageBoard", "techStack"],
+            "data": {
+                "imageUrls":  [
+                        ["/images/projects/001.jpg", "Visualisierung zum globalen Waffenhandel - die größten Exporteure"], 
+                        ["/images/projects/002.jpg", "Visualisierung zum globalen Waffenhandel - die größten Importeure"], 
+                        ["/images/projects/003.jpg", "Visualisierung zum globalen Waffenhandel - Menschrenrechtsverletzungen in den größten Importländern"] 
+                    ],
+                "stack": ["Adobe Illustrator", "Adobe InDesign", "Excel"] 
+            }
+        },
+
+        {
+            "slug": "tableau-visualizations",
+            "name": "Datenvisualisierungen mit Tableau",  
+            "previewImage": "/images/projects-preview/prev_tableau.webp",
+            "article": {
+                "title": "Datenvisualisierungen mit Tableau.",
+                "content": "<p>Diverse Infografiken, erstellt mit Tableau Public.</p>"
+            },
+            "components": ["article", "projectUrls", "techStack"],
+            "data": {
+                "stack": ["Tableau"],
+                "projectUrls": [
+    
+                    ["Vulkane", ["https://public.tableau.com/views/Vulkan/DEADLYVOLCANOES?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link", "Zur Grafik"]], 
+                    ["Bäume in NYC", ["https://public.tableau.com/views/TreesMoneyinNewYorkCity/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link", "Zur Grafik"]]
+                ],
+                "github": false
+            }
+        },
+        
+        {
+            "slug": "inforaphic-youth-in-Frankfurt",
+            "name": "Infografik: Jugendliche in Frankfurt (MoSyD)",  
+            "previewImage": "/images/projects-preview/prev_mosyd.webp",
+            "article": {
+                "title": "Infografik: Jugendliche in Frankfurt (MoSyD)",
+                "content": "<p>Infografik über das Konsum- und Rauschverhalten Jugendlicher in Frankfurt</p>"
+            },
+            "components": ["article", "posterGallery", "techStack"],
+            "data": {
+                "posterUrls": [["/images/projects/2019_infografik_mosyd.jpg", "Infografik über das Konsum- und Rauschverhalten Jugendlicher in Frankfurt"]],
+                "stack": ["Adobe InDesign", "Adobe Illustrator", "Excel"]
+            }
+        },
+
+        {
+            "slug": "terre-des-femmes",
+            "name": "Plakat: Terre Des Femmes",
+            "previewImage": "/images/projects-preview/prev_terredesfemmes.webp",
+            "components": ["posterGallery", "techStack"],
+            "data": {
+                "posterUrls": [["/images/projects/151101_terre_de_femmes_plakat.jpg", "Plakat welches zeigt, dass in Deutschland jede 3. Frau Opfer körperlicher oder sexueller Gewalt war."]],
+                "stack": ["Adobe InDesign"]            
+            }
+            
+        }
+    ]
