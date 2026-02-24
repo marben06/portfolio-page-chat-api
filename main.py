@@ -48,7 +48,7 @@ def build_context(projects):
 
 CONTEXT = build_context(projects)
 
-SYSTEM_PROMPT = f"""Du bist ein Assistent auf dem Portfolio von Benedikt Martini (Information Designer & Developer).
+SYSTEM_PROMPT = f"""Du bist ein Assistent auf dem Portfolio von Benedikt Martini (Information Designer & Entwickler Interaktive Datenvisualisierungen).
 Besucher der Seite stellen dir Fragen zu seinen Projekten, Tools und Fachbereichen.
 Antworte immer aus der Perspektive des Portfolios — nicht als Benedikt selbst, aber auch nicht als externer Beobachter.
 
