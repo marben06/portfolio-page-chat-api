@@ -73,14 +73,13 @@ class ChatRequest(BaseModel):
 
 @app.post("/portfolio-chat")
 async def chat(req: ChatRequest):
-    prompt = f"<s>[INST] {SYSTEM_PROMPT}\n\nUser question: {req.message} [/INST]"
 
     async with httpx.AsyncClient(timeout=30) as client:
         response = await client.post(
             HF_URL,
             headers={"Authorization": f"Bearer {HF_TOKEN}"},
             json={
-                "model": f"{HF_MODEL}:cerebras",  # cerebras is fast and free
+                "model": f"{HF_MODEL}:cerebras",  
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": req.message}
