@@ -49,7 +49,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_methods=["POST", "OPTIONS"],
-    allow_headers=["x-api-key", "content-type"],  # explicit, not wildcard
+    allow_headers=["x-api-key", "content-type"],  
 )
 
 # Grounding context

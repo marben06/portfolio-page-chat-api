@@ -3,5 +3,5 @@ fastapi
 uvicorn
 httpx
 python-dotenv
-
+slowapi
 
