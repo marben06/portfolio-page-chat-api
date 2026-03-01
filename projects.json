@@ -79,7 +79,7 @@
                     ["1kg - Costs Of Consumption", ["https://meat-consumption-infographic.onrender.com/", "Zur Karte"], ["https://github.com/benmar2406/meat_consumption_infographic", "Github"]]
                 ],
                 "github": true,
-                "videos": [["Demo - Website: Bienen", "/videos/bienen.mov"]],
+                "videos": [["Demo - Website: Bienen", "/videos/mieten.mov"], ["Demo - Website: Mieten in Deutschland", "/videos/mieten.mov"], ["Demo - Website: 1kg: Costs of Consumption", "/videos/meat.mov"]],
                 "stack": ["Svelte", "Mapbox Studio", "Mapbox GL JS", "D3", "Python", "pandas", "geopandas"]
             }
         },

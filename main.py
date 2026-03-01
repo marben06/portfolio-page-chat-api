@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
@@ -6,16 +6,30 @@ import json
 import os
 from dotenv import load_dotenv
 
+# set up server
+app = FastAPI()
+
 load_dotenv()
 
-app = FastAPI()
+API_KEY = os.getenv("API_KEY")
+
+
+environment = os.getenv("ENVIRONMENT", "production") # set origin based on environment
+
+if environment == "development":
+    origins = [os.getenv("DEV_ORIGIN")]  
+else:
+    origins = [os.getenv("PROD_ORIGIN")]  
+    
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://benediktmartini.de"],
+    allow_origins=origins,
     allow_methods=["POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_headers=["*"],
 )
+
+
 
 HF_TOKEN = os.getenv("HF_API_TOKEN")
 HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
@@ -70,10 +84,12 @@ Regeln:
 class ChatRequest(BaseModel):
     message: str
 
+async def verify_api_key(x_api_key: str = Header(...)):
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Could not validate credentials")
 
 @app.post("/portfolio-chat")
-async def chat(req: ChatRequest):
-
+async def chat(req: ChatRequest, api_key: str = Depends(verify_api_key)):
     async with httpx.AsyncClient(timeout=30) as client:
         response = await client.post(
             HF_URL,
@@ -88,7 +104,6 @@ async def chat(req: ChatRequest):
             },
         )
     print("STATUS:", response.status_code)
-    print("BODY:", response.text)
 
     if response.status_code != 200:
         return {"reply": f"HF API error: {response.status_code} - {response.text}"}
