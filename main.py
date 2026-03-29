@@ -5,7 +5,9 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from pydantic import BaseModel, field_validator
 from starlette.requests import Request
-import httpx
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 import json
 import os
 import re
@@ -16,7 +18,7 @@ from dotenv import load_dotenv
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Env / startup validation 
+# Env / startup validation
 load_dotenv()
 
 _REQUIRED = ["API_KEY", "HF_API_TOKEN", "PROD_ORIGIN"]
@@ -24,12 +26,12 @@ _missing = [k for k in _REQUIRED if not os.getenv(k)]
 if _missing:
     raise RuntimeError(f"Missing required env vars: {', '.join(_missing)}")
 
-API_KEY   = os.getenv("API_KEY")
-HF_TOKEN  = os.getenv("HF_API_TOKEN")
-HF_MODEL  = "meta-llama/Llama-3.1-8B-Instruct"
-HF_URL    = "https://router.huggingface.co/v1/chat/completions"
+API_KEY  = os.getenv("API_KEY")
+HF_TOKEN = os.getenv("HF_API_TOKEN")
+HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct:cerebras"
+HF_URL   = "https://router.huggingface.co/v1"
 
-# CORS 
+# CORS
 environment = os.getenv("ENVIRONMENT", "production")
 if environment == "development":
     dev_origin = os.getenv("DEV_ORIGIN")
@@ -39,7 +41,7 @@ if environment == "development":
 else:
     origins = [os.getenv("PROD_ORIGIN")]
 
-# App + rate limiter 
+# App + rate limiter
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
 app.state.limiter = limiter
@@ -49,7 +51,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_methods=["POST", "OPTIONS"],
-    allow_headers=["x-api-key", "content-type"],  
+    allow_headers=["x-api-key", "content-type"],
 )
 
 # Grounding context
@@ -80,6 +82,7 @@ try:
 except (FileNotFoundError, json.JSONDecodeError) as e:
     raise RuntimeError(f"Failed to load projects.json: {e}")
 
+# LangChain chain
 SYSTEM_PROMPT = f"""Du bist ein Assistent auf dem Portfolio von Benedikt Martini (Information Designer & Entwickler Interaktive Datenvisualisierungen).
 Besucher der Seite stellen dir Fragen zu seinen Projekten, Tools und Fachbereichen.
 Antworte immer aus der Perspektive des Portfolios — nicht als Benedikt selbst, aber auch nicht als externer Beobachter.
@@ -98,6 +101,20 @@ Regeln:
 {CONTEXT}
 --- ENDE ---"""
 
+prompt = ChatPromptTemplate.from_messages([
+    ("system", SYSTEM_PROMPT),
+    ("human", "{message}"),
+])
+
+llm = ChatOpenAI(
+    model=HF_MODEL,
+    openai_api_key=HF_TOKEN,
+    openai_api_base=HF_URL,
+    max_tokens=512,
+)
+
+chain = prompt | llm | StrOutputParser()
+
 # Request model
 class ChatRequest(BaseModel):
     message: str
@@ -112,7 +129,7 @@ class ChatRequest(BaseModel):
             raise ValueError("message must not exceed 1000 characters")
         return v
 
-# Auth 
+# Auth
 async def verify_api_key(x_api_key: str = Header(...)):
     if x_api_key != API_KEY:
         raise HTTPException(status_code=403, detail="Could not validate credentials")
@@ -121,32 +138,10 @@ async def verify_api_key(x_api_key: str = Header(...)):
 @app.post("/portfolio-chat")
 @limiter.limit("20/minute")
 async def chat(request: Request, req: ChatRequest, _: str = Depends(verify_api_key)):
-    async with httpx.AsyncClient(timeout=30) as client:
-        try:
-            response = await client.post(
-                HF_URL,
-                headers={"Authorization": f"Bearer {HF_TOKEN}"},
-                json={
-                    "model": f"{HF_MODEL}:cerebras",
-                    "messages": [
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user",   "content": req.message}
-                    ],
-                    "max_tokens": 512
-                },
-            )
-            response.raise_for_status()
-        except httpx.HTTPStatusError as e:
-            logger.error("HF API error: %s", e.response.status_code)
-            raise HTTPException(status_code=502, detail="Upstream API error")
-        except httpx.RequestError as e:
-            logger.error("HF request failed: %s", e)
-            raise HTTPException(status_code=502, detail="Upstream request failed")
-
     try:
-        reply = response.json()["choices"][0]["message"]["content"].strip()
-    except (KeyError, IndexError) as e:
-        logger.error("Unexpected HF response shape: %s", e)
-        raise HTTPException(status_code=502, detail="Unexpected upstream response")
+        reply = await chain.ainvoke({"message": req.message})
+    except Exception as e:
+        logger.error("LangChain chain error: %s", e)
+        raise HTTPException(status_code=502, detail="Upstream request failed")
 
     return {"reply": reply}
