@@ -142,7 +142,6 @@ async def chat(request: Request, req: ChatRequest, _: str = Depends(verify_api_k
         except httpx.RequestError as e:
             logger.error("HF request failed: %s", e)
             raise HTTPException(status_code=502, detail="Upstream request failed")
-
     try:
         reply = response.json()["choices"][0]["message"]["content"].strip()
     except (KeyError, IndexError) as e:
