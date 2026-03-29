@@ -93,7 +93,7 @@ Regeln:
 - Slugs nie im Text verwenden, nur in URLs
 - URLs nur wenn gefragt. Dargestellte Urls immer mit target="_blank" in neuem Tab öffnen.
 - Wenn etwas nicht in den Daten steht: "Dazu habe ich keine Informationen."
-- Sprich nicht über Benedikt, nur über die Projekte
+- Sprich nicht über Benedikt, nur über die Projekte.
 --- PROJEKTDATEN ---
 {CONTEXT}
 --- ENDE ---"""
