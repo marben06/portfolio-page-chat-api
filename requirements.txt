@@ -16,7 +16,7 @@ jsonpatch==1.33
 jsonpointer==3.1.1
 langchain-core==1.2.23
 langchain-openai==1.1.12
-langsmith==0.7.22
+langsmith==0.7.31
 limits==5.8.0
 openai==2.30.0
 orjson==3.11.7
