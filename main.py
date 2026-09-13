@@ -9,14 +9,16 @@ import httpx
 import json
 import os
 import re
+import secrets
 import logging
+import bleach
 from dotenv import load_dotenv
 
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Env / startup validation 
+# Env / startup validation
 load_dotenv()
 
 _REQUIRED = ["API_KEY", "HF_API_TOKEN", "PROD_ORIGIN"]
@@ -24,12 +26,12 @@ _missing = [k for k in _REQUIRED if not os.getenv(k)]
 if _missing:
     raise RuntimeError(f"Missing required env vars: {', '.join(_missing)}")
 
-API_KEY   = os.getenv("API_KEY")
-HF_TOKEN  = os.getenv("HF_API_TOKEN")
+API_KEY  = os.getenv("API_KEY")
+HF_TOKEN = os.getenv("HF_API_TOKEN")
 HF_MODEL = "openai/gpt-oss-120b"
-HF_URL    = "https://router.huggingface.co/v1/chat/completions"
+HF_URL   = "https://router.huggingface.co/v1/chat/completions"
 
-# CORS 
+# CORS
 environment = os.getenv("ENVIRONMENT", "production")
 if environment == "development":
     dev_origin = os.getenv("DEV_ORIGIN")
@@ -39,7 +41,7 @@ if environment == "development":
 else:
     origins = [os.getenv("PROD_ORIGIN")]
 
-# App + rate limiter 
+# App + rate limiter
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
 app.state.limiter = limiter
@@ -49,7 +51,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_methods=["POST", "OPTIONS"],
-    allow_headers=["x-api-key", "content-type"],  
+    allow_headers=["x-api-key", "content-type"],
 )
 
 # Grounding context
@@ -115,16 +117,43 @@ class ChatRequest(BaseModel):
             raise ValueError("message must not exceed 1000 characters")
         return v
 
-# Auth 
+# Auth
 async def verify_api_key(x_api_key: str = Header(...)):
-    if x_api_key != API_KEY:
+    # secrets.compare_digest statt "!=", um Timing-Angriffe auf den Vergleich zu vermeiden
+    if not secrets.compare_digest(x_api_key, API_KEY):
         raise HTTPException(status_code=403, detail="Could not validate credentials")
+
+# Output sanitizing
+# Erlaubt nur eine feste Menge an harmlosen Tags/Attributen. Alles andere (inkl. <script>,
+# Event-Handler wie onerror, iframes etc.) wird entfernt. Das ist die eigentliche
+# Sicherheitsgrenze gegen einen erfolgreichen Prompt-Jailbreak, der versucht, HTML/JS
+# in die Antwort zu schmuggeln — der System-Prompt allein ("Verlasse nie deine Rolle")
+# ist keine verlässliche Grenze.
+ALLOWED_TAGS = ["a", "p", "strong", "em", "ul", "ol", "li", "br"]
+ALLOWED_ATTRS = {"a": ["href", "target"]}
+ALLOWED_PROTOCOLS = ["http", "https"]
+
+def sanitize_reply(html: str) -> str:
+    cleaned = bleach.clean(
+        html,
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRS,
+        protocols=ALLOWED_PROTOCOLS,
+        strip=True,
+    )
+    # bleach entfernt kein target="_blank" mit fehlendem rel — ergänzen, um
+    # reverse-tabnabbing über window.opener zu vermeiden
+    cleaned = re.sub(
+        r'<a\s+([^>]*target="_blank"[^>]*)>',
+        lambda m: f'<a {m.group(1)} rel="noopener noreferrer">' if 'rel=' not in m.group(1) else m.group(0),
+        cleaned,
+    )
+    return cleaned
 
 def inject_link_style(html: str, style: str = "color:#252526;") -> str:
     def _add_style(match: re.Match) -> str:
         tag = match.group(0)
-        if 'style=' in tag:
-            # already has a style attr — append to it
+        if 'style="' in tag:
             return re.sub(r'style="([^"]*)"', rf'style="\1 {style}"', tag)
         return tag[:-1] + f' style="{style}">' if tag.endswith('>') else tag
     return re.sub(r'<a\s+[^>]*>', _add_style, html)
@@ -156,10 +185,14 @@ async def chat(request: Request, req: ChatRequest, _: str = Depends(verify_api_k
             raise HTTPException(status_code=502, detail="Upstream request failed")
 
     try:
-        content = response.json()["choices"][0]["message"]["content"]
+        choice = response.json()["choices"][0]
+        content = choice["message"]["content"]
         if not content:
             raise ValueError("empty content")
+        if choice.get("finish_reason") == "length":
+            logger.warning("Response was truncated by max_tokens limit")
         reply = content.strip()
+        reply = sanitize_reply(reply)
         reply = inject_link_style(reply, "color:#252526;")
     except (KeyError, IndexError, ValueError, AttributeError) as e:
         logger.error("Unexpected HF response shape: %s | raw=%s", e, response.text)
