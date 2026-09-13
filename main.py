@@ -144,9 +144,12 @@ async def chat(request: Request, req: ChatRequest, _: str = Depends(verify_api_k
             raise HTTPException(status_code=502, detail="Upstream request failed")
 
     try:
-        reply = response.json()["choices"][0]["message"]["content"].strip()
-    except (KeyError, IndexError) as e:
-        logger.error("Unexpected HF response shape: %s", e)
+        content = response.json()["choices"][0]["message"]["content"]
+        if not content:
+            raise ValueError("empty content")
+        reply = content.strip()
+    except (KeyError, IndexError, ValueError, AttributeError) as e:
+        logger.error("Unexpected HF response shape: %s | raw=%s", e, response.text)
         raise HTTPException(status_code=502, detail="Unexpected upstream response")
 
     return {"reply": reply}
