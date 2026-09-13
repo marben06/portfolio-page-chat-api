@@ -5,6 +5,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from pydantic import BaseModel, field_validator
 from starlette.requests import Request
+from datetime import date
 import httpx
 import json
 import os
@@ -123,12 +124,22 @@ async def verify_api_key(x_api_key: str = Header(...)):
     if not secrets.compare_digest(x_api_key, API_KEY):
         raise HTTPException(status_code=403, detail="Could not validate credentials")
 
+# Globaler Tagesdeckel: verhindert Kostenexplosion, unabhängig von IP-basiertem
+# Rate-Limiting 
+DAILY_LIMIT = 200
+_daily_counter = {"date": None, "count": 0}
+
+def check_daily_limit():
+    today = date.today().isoformat()
+    if _daily_counter["date"] != today:
+        _daily_counter["date"] = today
+        _daily_counter["count"] = 0
+    _daily_counter["count"] += 1
+    if _daily_counter["count"] > DAILY_LIMIT:
+        logger.warning("Daily request limit reached (%s)", DAILY_LIMIT)
+        raise HTTPException(status_code=429, detail="Daily limit reached")
+
 # Output sanitizing
-# Erlaubt nur eine feste Menge an harmlosen Tags/Attributen. Alles andere (inkl. <script>,
-# Event-Handler wie onerror, iframes etc.) wird entfernt. Das ist die eigentliche
-# Sicherheitsgrenze gegen einen erfolgreichen Prompt-Jailbreak, der versucht, HTML/JS
-# in die Antwort zu schmuggeln — der System-Prompt allein ("Verlasse nie deine Rolle")
-# ist keine verlässliche Grenze.
 ALLOWED_TAGS = ["a", "p", "strong", "em", "ul", "ol", "li", "br"]
 ALLOWED_ATTRS = {"a": ["href", "target"]}
 ALLOWED_PROTOCOLS = ["http", "https"]
@@ -162,6 +173,8 @@ def inject_link_style(html: str, style: str = "color:#252526;") -> str:
 @app.post("/portfolio-chat")
 @limiter.limit("20/minute")
 async def chat(request: Request, req: ChatRequest, _: str = Depends(verify_api_key)):
+    check_daily_limit()
+
     async with httpx.AsyncClient(timeout=30) as client:
         try:
             response = await client.post(
