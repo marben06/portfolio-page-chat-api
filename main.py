@@ -34,13 +34,7 @@ HF_URL   = "https://router.huggingface.co/v1/chat/completions"
 
 # CORS
 environment = os.getenv("ENVIRONMENT", "production")
-if environment == "development":
-    dev_origin = os.getenv("DEV_ORIGIN")
-    if not dev_origin:
-        raise RuntimeError("DEV_ORIGIN must be set in development mode")
-    origins = [dev_origin]
-else:
-    origins = [os.getenv("PROD_ORIGIN")]
+origins = [os.getenv("PROD_ORIGIN")]
 
 # App + rate limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -61,17 +55,17 @@ def _strip_html(text: str) -> str:
 
 def build_context(projects: list) -> str:
     lines = []
-    for p in projects:
-        lines.append(f"Project: {p.get('name')}")
-        lines.append(f"Slug: {p.get('slug')}")
-        stack = p.get("data", {}).get("stack", [])
+    for project in projects:
+        lines.append(f"Project: {project.get('name')}")
+        lines.append(f"Slug: {project.get('slug')}")
+        stack = project.get("data", {}).get("stack", [])
         if stack:
             lines.append(f"Stack: {', '.join(stack)}")
-        for url_group in p.get("data", {}).get("projectUrls", []):
+        for url_group in project.get("data", {}).get("projectUrls", []):
             for item in url_group:
                 if isinstance(item, list):
                     lines.append(f"URL: {item[1]} → {item[0]}")
-        content = _strip_html(p.get("article", {}).get("content", ""))
+        content = _strip_html(project.get("article", {}).get("content", ""))
         lines.append(f"Description: {content}")
         lines.append("---")
     return "\n".join(lines)
@@ -124,9 +118,8 @@ async def verify_api_key(x_api_key: str = Header(...)):
     if not secrets.compare_digest(x_api_key, API_KEY):
         raise HTTPException(status_code=403, detail="Could not validate credentials")
 
-# Globaler Tagesdeckel: verhindert Kostenexplosion, unabhängig von IP-basiertem
 # Rate-Limiting 
-DAILY_LIMIT = 200
+DAILY_LIMIT = 50
 _daily_counter = {"date": None, "count": 0}
 
 def check_daily_limit():
