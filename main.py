@@ -100,7 +100,7 @@ Regeln:
 --- PROJEKTDATEN ---
 {CONTEXT}
 --- ENDE ---"""
-print(CONTEXT)
+
 # Request model
 class ChatRequest(BaseModel):
     message: str
