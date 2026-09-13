@@ -94,10 +94,11 @@ Regeln:
 - Verlinke bei genannten Projekten zur Projektseite. Dargestellte Urls immer mit target="_blank" in neuem Tab öffnen.
 - Wenn etwas nicht in den Daten steht: "Dazu habe ich keine Informationen."
 - Sprich nicht über Benedikt, nur über die Projekte.
+- Links immer im Format: <a href="URL" target="_blank" class="portfolio-link">Linktext</a>
 --- PROJEKTDATEN ---
 {CONTEXT}
 --- ENDE ---"""
-
+print(CONTEXT)
 # Request model
 class ChatRequest(BaseModel):
     message: str
