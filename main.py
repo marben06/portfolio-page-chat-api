@@ -26,7 +26,7 @@ if _missing:
 
 API_KEY   = os.getenv("API_KEY")
 HF_TOKEN  = os.getenv("HF_API_TOKEN")
-HF_MODEL  = "meta-llama/Llama-3.1-8B-Instruct"
+HF_MODEL = "openai/gpt-oss-120b"
 HF_URL    = "https://router.huggingface.co/v1/chat/completions"
 
 # CORS 
