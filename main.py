@@ -118,6 +118,16 @@ async def verify_api_key(x_api_key: str = Header(...)):
     if x_api_key != API_KEY:
         raise HTTPException(status_code=403, detail="Could not validate credentials")
 
+# add class to returned a tags
+def inject_link_class(html: str, css_class: str = "portfolio-link") -> str:
+    def _add_class(match: re.Match) -> str:
+        tag = match.group(0)
+        if 'class=' in tag:
+            # already has a class attr — append to it
+            return re.sub(r'class="([^"]*)"', rf'class="\1 {css_class}"', tag)
+        return tag[:-1] + f' class="{css_class}">' if tag.endswith('>') else tag
+    return re.sub(r'<a\s+[^>]*>', _add_class, html)
+
 # Route
 @app.post("/portfolio-chat")
 @limiter.limit("20/minute")
@@ -133,7 +143,7 @@ async def chat(request: Request, req: ChatRequest, _: str = Depends(verify_api_k
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {"role": "user",   "content": req.message}
                     ],
-                    "max_tokens": 512
+                    "max_tokens": 2000
                 },
             )
             response.raise_for_status()
@@ -149,6 +159,7 @@ async def chat(request: Request, req: ChatRequest, _: str = Depends(verify_api_k
         if not content:
             raise ValueError("empty content")
         reply = content.strip()
+        reply = inject_link_class(reply, "chat-url")
     except (KeyError, IndexError, ValueError, AttributeError) as e:
         logger.error("Unexpected HF response shape: %s | raw=%s", e, response.text)
         raise HTTPException(status_code=502, detail="Unexpected upstream response")
